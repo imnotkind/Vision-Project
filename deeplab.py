@@ -5,7 +5,7 @@ from deeplabv3.model import Deeplabv3
 
 deeplab_model = Deeplabv3()
 
-img = plt.imread("tmp/112.jpg")
+img = plt.imread("tmp/112.png")
 w, h, _ = img.shape
 ratio = 512. / np.max([w,h])
 resized = cv2.resize(img,(int(ratio*h),int(ratio*w)))
