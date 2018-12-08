@@ -5,15 +5,20 @@ from deeplabv3.model import Deeplabv3
 
 deeplab_model = Deeplabv3()
 
-img = plt.imread("tmp/112.png")
+img = plt.imread("sample/man.jpg")
 w, h, _ = img.shape
 ratio = 512. / np.max([w,h])
 resized = cv2.resize(img,(int(ratio*h),int(ratio*w)))
 resized = resized / 127.5 - 1.
 pad_x = int(512 - resized.shape[0])
 resized2 = np.pad(resized,((0,pad_x),(0,0),(0,0)),mode='constant')
+print(resized.shape)
+plt.imshow(resized2)
+plt.show()
 
 res = deeplab_model.predict(np.expand_dims(resized2,0))
+print(res.shape)
 labels = np.argmax(res.squeeze(),-1)
+print(labels.shape)
 plt.imshow(labels[:-pad_x])
 plt.show()

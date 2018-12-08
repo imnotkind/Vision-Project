@@ -13,6 +13,8 @@ mainly videos from Rao IIT Academy :
 
 
 
-object detection : teacher
-
 teacher detection by semantic segmentation : https://github.com/bonlime/keras-deeplab-v3-plus
+
+
+
+https://github.com/tensorflow/models/blob/master/research/deeplab/g3doc/model_zoo.md
