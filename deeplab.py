@@ -8,7 +8,7 @@ import matplotlib.image as mpimg
 
 class Segmentation:
     def __init__(self, modelname='deeplab_resnet152_voc', palletename='pascal_voc'):
-        self.ctx = mx.cpu(0)
+        self.ctx = mx.gpu(0)
         self.model = gluoncv.model_zoo.get_model(modelname, pretrained=True, root='.mxnet/models', ctx=self.ctx)
 
         self.transform_fn = transforms.Compose([
@@ -29,6 +29,12 @@ class Segmentation:
         img = img.expand_dims(0).as_in_context(self.ctx)
         output = self.model.demo(img)
         predict = mx.nd.squeeze(mx.nd.argmax(output, 1)).asnumpy()
+        #print(predict.shape)
+        s = set([])
+        for (x,y), value in np.ndenumerate(predict):
+            s.add(value)
+        print(s) #0:background, 15:person
+
         mask = get_color_pallete(predict, self.palletename)
         mask.save(filename + '_label.png')
 
@@ -42,7 +48,6 @@ class Segmentation:
 
 
 seg = Segmentation('deeplab_resnet152_voc', 'pascal_voc')
-exit(0)
 
 filelist = ['255', '2740', '2877', '2921', '3097']
 
