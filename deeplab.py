@@ -1,67 +1,52 @@
-"""3. Test with DeepLabV3 Pre-trained Models
-======================================
-
-This is a quick demo of using GluonCV DeepLabV3 model on ADE20K dataset.
-Please follow the `installation guide <../index.html>`_ to install MXNet and GluonCV if not yet.
-"""
 import mxnet as mx
 from mxnet import image
 from mxnet.gluon.data.vision import transforms
 import gluoncv
-# using cpu
-ctx = mx.cpu(0)
-
-
-##############################################################################
-# Prepare the image
-# -----------------
-#
-# download the example image
-#url = 'https://github.com/zhanghang1989/image-data/blob/master/encoding/' + \
-#    'segmentation/ade20k/ADE_val_00001755.jpg?raw=true'
-#filename = 'ade20k_example.jpg'
-#gluoncv.utils.download(url, filename, True)
-
-##############################################################################
-# load the image
-filename = 'sample/lec2.png'
-img = image.imread(filename)
-
-from matplotlib import pyplot as plt
-plt.imshow(img.asnumpy())
-plt.show()
-
-##############################################################################
-# normalize the image using dataset mean
-transform_fn = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize([.485, .456, .406], [.229, .224, .225])
-])
-img = transform_fn(img)
-img = img.expand_dims(0).as_in_context(ctx)
-
-##############################################################################
-# Load the pre-trained model and make prediction
-# ----------------------------------------------
-#
-# get pre-trained model
-model = gluoncv.model_zoo.get_model('deeplab_resnet101_ade', pretrained=True)
-
-##############################################################################
-# make prediction using single scale
-output = model.demo(img)
-predict = mx.nd.squeeze(mx.nd.argmax(output, 1)).asnumpy()
-
-##############################################################################
-# Add color pallete for visualization
 from gluoncv.utils.viz import get_color_pallete
 import matplotlib.image as mpimg
-mask = get_color_pallete(predict, 'ade20k')
-mask.save('sample/lec2output.png')
 
-##############################################################################
-# show the predicted mask
-#mmask = mpimg.imread('sample/lecoutput.png')
-#plt.imshow(mmask)
-#plt.show()
 
+class Segmentation:
+    def __init__(self, modelname='deeplab_resnet152_voc', palletename='pascal_voc'):
+        self.ctx = mx.cpu(0)
+        self.model = gluoncv.model_zoo.get_model(modelname, pretrained=True, root='.mxnet/models', ctx=self.ctx)
+
+        self.transform_fn = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize([.485, .456, .406], [.229, .224, .225])
+        ])
+        if '_voc' in modelname:
+            self.palletename = 'pascal_voc'
+        elif '_ade' in modelname:
+            self.palletename = 'ade20k'
+        else:
+            print("invalid model name")
+            exit(0)
+
+    def process(self, filename):
+        img = image.imread(filename + '.png')
+        img = self.transform_fn(img)
+        img = img.expand_dims(0).as_in_context(self.ctx)
+        output = self.model.demo(img)
+        predict = mx.nd.squeeze(mx.nd.argmax(output, 1)).asnumpy()
+        mask = get_color_pallete(predict, self.palletename)
+        mask.save(filename + '_label.png')
+
+
+    def show_img(self, filename):
+        tmp = mpimg.imread(filename)
+        plt.imshow(tmp)
+        plt.show()
+
+
+
+
+seg = Segmentation('deeplab_resnet152_voc', 'pascal_voc')
+exit(0)
+
+filelist = ['255', '2740', '2877', '2921', '3097']
+
+filelist = list(map(lambda x : 'sample/'+x, filelist))
+
+for i in filelist:
+    seg.process(i)

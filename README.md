@@ -5,7 +5,7 @@ Convert lecture video to lecture pdf
 
 ## level1
 
-**fixed camera, moving teacher, explicit board transition**
+**fixed camera, fullscreen board, explicit board transition**
 
 mainly videos from Rao IIT Academy : 
 
@@ -13,8 +13,22 @@ mainly videos from Rao IIT Academy :
 
 
 
-teacher detection by semantic segmentation : https://github.com/bonlime/keras-deeplab-v3-plus
+###human detection by semantic segmentation
+
+https://gluon-cv.mxnet.io/build/examples_segmentation/demo_fcn.html
 
 
 
-https://github.com/tensorflow/models/blob/master/research/deeplab/g3doc/model_zoo.md
+deeplab_resnet152_voc : highest segmentation score in pascal voc
+
+- https://gluon-cv.mxnet.io/model_zoo/segmentation.html
+
+- http://host.robots.ox.ac.uk:8080/anonymous/XZEXL2.html
+
+
+
+gpu error:
+
+- https://discuss.mxnet.io/t/python-stopped-working-error-on-gpu/1737
+- http://forthenextstep.tistory.com/29
+- https://stankirdey.com/2017/03/09/installing-mxnet-deep-learning-framework-on-windows-10/
