@@ -4,7 +4,7 @@ from mxnet.gluon.data.vision import transforms
 import gluoncv
 from gluoncv.utils.viz import get_color_pallete
 import matplotlib.image as mpimg
-
+import numpy as np
 
 class Segmentation:
     def __init__(self, modelname='deeplab_resnet152_voc', palletename='pascal_voc'):
