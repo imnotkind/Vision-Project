@@ -4,3 +4,13 @@
 .vscode/
 /deeplabv3/
 .mxnet/
+
+# latex
+*.aux
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+*.gz

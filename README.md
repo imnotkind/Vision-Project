@@ -7,6 +7,8 @@ Convert lecture video to lecture pdf
 
 **fixed camera, fullscreen board, explicit board transition**
 
+
+
 mainly videos from Rao IIT Academy : 
 
 `https://www.youtube.com/channel/UCG0qvp06I-LULSJ7sTw8YoQ`
@@ -24,6 +26,10 @@ deeplab_resnet152_voc : highest segmentation score in pascal voc
 - https://gluon-cv.mxnet.io/model_zoo/segmentation.html
 
 - class list : http://host.robots.ox.ac.uk:8080/anonymous/XZEXL2.html
+  - 0 : background
+  - 15 : person
+
+
 
 
 
@@ -36,3 +42,20 @@ gpu error:
 
 
 
+
+
+we ignore the human part when making pdf.
+
+### board transition detection
+
+in this series of lecture, a transition is explicitly white-out. we detect those white-out scenes.
+
+
+
+### board overlay
+
+between those transitions, we overlay the board to get a full lecture board image.
+
+if change occurred in board, we choose the latter one.
+
+if significant change occurs, maybe we should detect them as a transition.
