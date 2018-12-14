@@ -27,7 +27,7 @@ def level1(video):
 
         if success:
             #cv2.imwrite(tmp_dir + str(count) +'.png', image)
-            if preimage != None:
+            if count != 0:
                 #diffimage = cv2.absdiff(preimage, image)
                 #diffimage = cv2.cvtColor(diffimage, cv2.COLOR_BGR2GRAY)
                 dist = norm(image, preimage, NORM_L2)
