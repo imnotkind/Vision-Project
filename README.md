@@ -59,3 +59,5 @@ between those transitions, we overlay the board to get a full lecture board imag
 if change occurred in board, we choose the latter one.
 
 if significant change occurs, maybe we should detect them as a transition.
+
+IoU 감지나 multi scale patch aggregation (lec10) 참고
