@@ -5,6 +5,8 @@ import gluoncv
 from gluoncv.utils.viz import get_color_pallete
 import matplotlib.image as mpimg
 import numpy as np
+import cv2
+from PIL import Image
 
 class Segmentation:
     def __init__(self, modelname='deeplab_resnet152_voc', palletename='pascal_voc'):
@@ -24,14 +26,12 @@ class Segmentation:
             exit(0)
 
     def process(self, filename):
-        img = image.imread(filename + '.png')
-        img = self.transform_fn(img)
+        img2 = image.imread(filename + '.png')
+        img = self.transform_fn(img2)
         img = img.expand_dims(0).as_in_context(self.ctx)
         output = self.model.demo(img)
         predict = mx.nd.squeeze(mx.nd.argmax(output, 1)).asnumpy()
 
-        
-        #print(predict.shape)
         s = set([])
         for (x,y), value in np.ndenumerate(predict):
             s.add(value)
@@ -40,9 +40,11 @@ class Segmentation:
         mask = get_color_pallete(predict, self.palletename)
         mask.save(filename + '_label.png')
 
-        overlay = cv2.addWeighted(img,0.5,mask,0.5,0)
-        mask.save(filename + '_overlay.png')
+        mask2 = np.array(mask.convert('RGB'))
 
+        overlay = cv2.addWeighted(img2.asnumpy(),0.5,mask2,0.5,0)
+        overlay = Image.fromarray(overlay)
+        overlay.save(filename + '_overlay.png')
 
 
 
