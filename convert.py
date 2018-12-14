@@ -20,24 +20,27 @@ def level1(video):
 
     vidcap.set(cv2.CAP_PROP_POS_FRAMES, 0) # 0 based index frame
     count = 0
-
+    preimage = None
+    transition = []
     while vidcap.isOpened():
         success, image = vidcap.read()
 
         if success:
-            cv2.imwrite(tmp_dir + str(count) +'.png', image)
+            #cv2.imwrite(tmp_dir + str(count) +'.png', image)
+            if preimage != None:
+                #diffimage = cv2.absdiff(preimage, image)
+                #diffimage = cv2.cvtColor(diffimage, cv2.COLOR_BGR2GRAY)
+                dist = norm(image, preimage, NORM_L2)
+                print(dist, count)
             count += 1
+            preimage = image
         else:
             break
 
-        if count == 10:
-            break
 
     vidcap.release()
     cv2.destroyAllWindows()
 
-    pic2pdf(width, height, count)
-    return True
     
 
 def pic2pdf(width, height, count):

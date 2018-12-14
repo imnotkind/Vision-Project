@@ -26,8 +26,8 @@ class Segmentation:
             exit(0)
 
     def process(self, filename):
-        img2 = image.imread(filename + '.png')
-        img = self.transform_fn(img2)
+        origimg = image.imread(filename + '.png')
+        img = self.transform_fn(origimg)
         img = img.expand_dims(0).as_in_context(self.ctx)
         output = self.model.demo(img)
         predict = mx.nd.squeeze(mx.nd.argmax(output, 1)).asnumpy()
@@ -38,11 +38,11 @@ class Segmentation:
         print(s) #0:background, 15:person
 
         mask = get_color_pallete(predict, self.palletename)
-        mask.save(filename + '_label.png')
+        mask.save(filename + '_mask.png')
 
         mask2 = np.array(mask.convert('RGB'))
 
-        overlay = cv2.addWeighted(img2.asnumpy(),0.5,mask2,0.5,0)
+        overlay = cv2.addWeighted(origimg.asnumpy(),0.5,mask2,0.5,0)
         overlay = Image.fromarray(overlay)
         overlay.save(filename + '_overlay.png')
 
