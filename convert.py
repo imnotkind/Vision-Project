@@ -30,7 +30,7 @@ def level1(video):
             if count != 0:
                 #diffimage = cv2.absdiff(preimage, image)
                 #diffimage = cv2.cvtColor(diffimage, cv2.COLOR_BGR2GRAY)
-                dist = norm(image, preimage, NORM_L2)
+                dist = cv2.norm(image, preimage, NORM_L2)
                 print(dist, count)
             count += 1
             preimage = image
