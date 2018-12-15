@@ -42,15 +42,17 @@ gpu error:
 
 
 
-
-
-we ignore the human part when making pdf.
-
 ### board transition detection
 
 in this series of lecture, a transition is explicitly white-out. we detect those white-out scenes.
 
-blur detection : variance of laplacian?
+blur detection : variance of laplacian : 동영상에 blur가 많으므로 버림
+
+white-like metric detection : could misdetect human behavior (사람이 영상에서 차지하는 면적이 줄거나 그럴때)
+
+- 상
+
+
 
 ### board overlay
 
