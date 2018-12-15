@@ -43,6 +43,23 @@ The goal is to recover images of a board scene, recovering the parts of the boar
 \section{Motivation}
 Sometimes, when you watch a lecture video, it is painful to write lecture notes. 
 If we automatically generate lecture notes, then it would definitely be convenient.
+There are some situations that you could not see the full board because the lecturer is blocking it.
+\begin{figure}[H]
+\centering
+\subfigure[human moving around the same board image, blocking the board 1]
+{
+    \label{fig:subfig1}
+    \includegraphics[scale=0.3]{2740.png}
+}
+\end{figure}
+\begin{figure}[H]
+\centering
+\subfigure[human moving around the same board image, blocking the board 2]
+{
+    \label{fig:subfig2}
+    \includegraphics[scale=0.3]{2877.png}
+}
+\end{figure}
 
 \section{Goals}
 \subsection{Board Detection and Extracting Human Pixel}
@@ -50,108 +67,68 @@ We first have to know where the board is, to generate a picture of the board. Ev
 \subsection{Board Transition Detection}
 When do we have to take a snapshot? I would guess when it's when a lecturer erases the board, or when it moves to a new board, or when the board changes. I call this as a 'board transition'. This part is the most hardest part, because every lecture has different transitions with different magnitude, and it's hard to catch them all. For example, what if the lecturer erases only part of the board, and keeps going on? It is quite a task to detect them significantly.
 \subsection{Board Recovery}
-We now know the timing when we need to extract board images, so we recover the board in that time interval. We need to use a scheme to effectively predict 
+We now know the timing when we need to extract board images, so we recover the board in that time interval. We need to use a scheme to effectively predict the best board image possible, which is probably the latest shot of the board.
 \subsection{(Optional) Making images to a pdf file}
 A lecture note is best if it exists as a pdf, since a bunch of images are rather uncomfortable to keep.
 
 \section{Implementation}
 \subsection{Development Environment and Dataset}
-In this project we need direct controlling of the shaders, especially fragment shaders.
-Or even there could be some arbitrary change of pipeline in overall, because extreme features of fractal geometry could require some modification of typical graphics procedures.
-And also one of our goal is about optimization of this particular task, so we consider low-level programming.
-
-And fractals are not highly related to photo realism, so many pre-developed presets and modules provided by
-graphics engines such as Unity won't be particularly helpful.
-Thus we'll develop this project with pure OpenGL(with glut, glm, ...)
+In this project, I used python with opencv, PIL, numpy for image and video manipulation, and mxnet and gluoncv for semantic segmentation. \\
+The goal was to make an application that could apply in general lecture videos, but soon I found that it was quite hard to achieve, especially in the difference of board transition. Instead, I found some lecture channel on Youtube, Rao IIT Academy(\url{https://www.youtube.com/user/raoiitacademy}), that had similar formats in every lecture. They always had a fixed camera with a full background board, with a quite explicit board transition by fading. So we could skip board detection, because the board is just a background. For this project, my target was only this channel's lectures, but I would always want to do some more and develop this program for more general use, if I have time later on.
 \subsection{Human Exclusion by Semantic Segmentation}
-The key idea of rendering fractals is using fragment shaders wisely.
-'Escape-time fractals', such as Mandelbrot set is rendered based on the speed of diversion for every complex coordinates.
-So those kinds of fractals will require the renderer to perform per-pixel calculation, which is the reason fragment shaders are for.
-
-And vertex shaders are also important.
-To construct 3D space of fractals, we should choose either voxel rendering or 3D polygons with 2D fractal textures.
-Voxel is very intutive and expressive, but needs an enormous amount of calculation.
-Thus we consider 3D polygons, but those polygons should be also complex and fractalistic enough.
-We also expect an animation of fractal space, so vertex shaders also must be used well.
-\subsection{Advanced Rendering Techniques}
-Advanced techniques like shading, texture, arbitrary clipping, aliasing would make the final quality better or even produce some novel graphic.
-Our lecture hasn't covered those topics yet, so we will think about this later.
-
-\subsection{scheme}
-If we want to render fractals in real time, optimization will be important.
-Here are some schemes we've thought about.
-
-\textbf{Parallel Processing}
-Yes, of course shaders are exactly for parallel procesing.
-We will exploit the benefits of using parallel programming as much as we can, trying to put many works on shaders.
-Or even cpu may need to be parallized.
-
-\textbf{Cache}
-Some fractals may have symmetric features or repeated geometry (for strict fractals).
-Instead of just re-calculating those parts, we can keep them and reuse.
-If the data we want to keep is result of shaders, then we need to think about whether saving some calculated data in gpu is possible and eventhough, if it is efficient.
-
-\textbf{Dynamic Resolution}
-Rendering fractals in high resolution will be necessary, but not for everywhere.
-If the polygon we want to render fractal on is too far or too tilted, then we can consider lowering resolution for only that place.
-(Remember that what we try to do is rendering fractals \textit{on polygons})
-
-\textbf{Keeping the buffer}
-We can reuse some part of frame buffer for last scene, which is not common.
+Do we have to detect a human object? Well, if we could find out the color of the board and the color of the marker, then it might be possible to exclude colors that are not one of those to exclude obstacles. But this method is bad in some situations where the color of a person could be same of a board or marker, and it is quite hard to know the color of the markers. Then we might use object detection in detecting human with a bounding box. But in this case, a bounding box is too rough to effectively recover the board, so I decided to use semantic segmentation, which could effectively sort out the pixels of a human. I tried a few famous pretrained models, and found out that the best one for my case is Deeplabv3 with ResNet-152 as backbone network, trained on PASCAL VOC 2012, which has a 86.69 mIoU score.\cite{c1}
+\begin{figure}[H]
+\centering
+\subfigure[result of semantic segmentation]
+{
+    \label{fig:subfig3}
+    \includegraphics[scale=0.3]{3097_overlay.png}
+}
+\end{figure}
+\subsection{Board Transition Detection}
+This is the trickiest part. Even though I selected a very easy lecture format with explicit transition, my program still doesn't accurately extract the transitions. In this lecture, board transition is usually expressed with fading screens, so I calculated the euclidian distance of a white screen. Then by the change of the distance, if the distance decreases and increases, I thought of that as a transition time. The intervals(the amount of pages that I am going to produce) are made by having those transition times as endpoints. One thing you should keep in mind is, this algorithm is not only catching fading effects, and is not only limited to this dataset. If we erase a board, then the euclidian distance to the board color decreases, and increases when we rewrite. So we could apply this same metric in general cases, too. But this metric has its own problems, too; the whiteness distance could change just by the moving of a lecturer, since the coverage of a board changes, leading to distance change. I tried some tweaks to prevent getting these situations as a transition, but could not prevent them all.
+\subsection{Board Recovery}
+This is done by a simple algorithm, highly dependent on the board transition detection. We assume that all the board erasing movement is captured by board transition detection, so the interval we have only consists of drawing in the board augmentatively. So we start from the last frame of the interval, and we rewind the frame with a particular stride, and check if the pixel obstructed in the future frame is visible on the previous frame. If the recovery reaches 100 percent, we stop the rewind and move on to the next interval. This algorithm itself is quite descent, but if the transition detection is inaccurate or too sensitive, then it could lead to weakly-merged board images.
+\begin{figure}[H]
+\centering
+\subfigure[result of board recovery]
+{
+    \label{fig:subfig3}
+    \includegraphics[scale=0.3]{1529_3278.png}
+}
+\end{figure}
+\subsection{Gathering images to a pdf file}
+This is just done by using fpdf, a pdf library.
 
 
 \section{Notable References}
-\subsection{Deeplabv3}
-\url{https://arxiv.org/abs/1706.05587}
-There are 3 reference textbooks we'll study.
-\textit{Interactive Computer Graphics}\cite{c1}, our course textbook, introduces some background of fractal geometry and examples like Mandelbrot Set.
-\textit{OpenGL SuperBible}\cite{c2} introduces rendering methods of Julia fractals using shader.
-\textit{Rendering Methods for 3D Fractals}\cite{c3} introduces volume rendering methods for fractal rendering and methods for 3D Fractal high resolution image. We can choose techniques for 3D fractal calculation and rendering.
+\subsection{Deeplabv3\cite{c2}}
+This model is also introduced in our lecture. It uses Atrous convolution and post processing. It is one of the state-of-the-art models in semantic segmentation.
 
-\subsection{Fragmentarium}
-\textbf{Fragmentarium} is an open source, pixel-based graphics rendering tool, which is part of what we want to do.
-The program's input script is based on GLSL, with some added functionalities and preprocessors.
-Fragmentarium is good for generating fractal art, such as \url{https://www.flickr.com/groups/fragmentarium/}.
-It is open source and based on GLSL shaders, so we think we could get something out of it.
-You could get more details from \url{http://syntopia.github.io/Fragmentarium/index.html}.
 
 \section{Gallery}
 \begin{figure}[H]
 \centering
-\subfigure[scene from a Youtube video(\url{https://youtu.be/S530Vwa33G0})]
+\subfigure[some results of board recovery]
 {
-    \label{fig:subfig1}
-    \includegraphics[scale=0.3]{cap1.PNG}
+    \label{fig:subfig4}
+    \includegraphics[scale=0.3]{19477_20525.png}
 }
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\subfigure[a Mandelbrot Set(\url{https://en.wikipedia.org/wiki/Mandelbrot_set})]
-{
-    \label{fig:subfig2}
-    \includegraphics[scale=0.3]{mandel.jpg}
-}
-\end{figure}
 \section{Discussion}
-There are some issues in this project.
 \begin{description}[style=nextline]
-\item[Is rendering such high resolution 3D fractals possible in realtime?]
-We agree that it's difficult generally, so some loss of quality could be inevitable.
-But we believe most of the overhead can be optimized using very specialized techniques with a well-developed program.
-\item[What level of achievement do we expect?]
-Studying, researching and implementing all those features mentioned will be our goal.
-The quality of product that we desire is slightly less than common fractal videos in Youtube, because we're doing in realtime. (search \say{3D fractal})
-\item[What are our roles?]
-Not clearly separated, but we have some background knowledge. Junha has exeperienced fractals before and familiar with machine learning. (Not sure if it is useful)
-Sangwoo knows how to deal with videos(PBS). Haebin is good at low-level and system programming.
+\item[How could we make semantic segmentation more accurate?]
+This pretrained model itself has some decent performance, but it rarely omits some body parts. This could be done by fine tuning the model. I skipped fine tuning in this project because I didn't have much time to create the labels for the lecture images. But these particular videos are quite easy in that they have a similar structure and camera view, so it wouldn't be that hard to achieve good results in this particular dataset.
+\item[How could we make board transition detection more accurate?]
+I thought about some several schemes to achieve accurate board transition detection, but it is quite tricky. First, I thought of blur detection, since in this dataset, a fade occurs, and this causes blurring. So we could calculate the variance of laplacian to detect blurriness, but this is a video, so blurring commonly happens, even when it's not fading. Or we could just calculate the euclidian difference between the adjacent frames of the board, and also calculate how much pixels the color of the board was covered to detect erasing events. I think this could be an effective metric, but these pixel color-specific metrics usually happen to fail, since this is a video, can color changes frequently in the video even it is the same color in reality.
+\item[How could we make recover boards more smoothly?]
+As you see in the results, the pixel colors actually tend to change a little bit during the video, leading to uncontinuous pixel color results of recovery. This could be solved by some interpolation or some heuristic to equalize the colors, but I did not implement those schemes yet.
 \end{description}
 
 \begin{thebibliography}{1}
-\bibitem{c1}E. Angel and D. Shreiner, Interactive Computer Graphics: A Top-Down Approach with Shader-Based OpenGL, 6th ed., Addison-Wesley, 2011, p.487 Section 9.8 Recursive Methods and fractals
-\bibitem{c2}Graham Sellers; Richard S. Wright, Jr.; Nicholas Hanemel, OpenGL SuperBible, 7th ed., Addison-Wesley, p.683 Rendering Julia Fractals
-\bibitem{c3}Rickard Englund, Rendering Methods for 3D Fractals
-\textit{Science and Engineering Ethincs}, 2009, pp. 311-341.
+\bibitem{c1}PASCAL VOC Challenge performance evaluation of my pretrained model : \url{http://host.robots.ox.ac.uk:8080/anonymous/XZEXL2.html}
+\bibitem{c2}Chen, Liang-Chieh, et al. “Rethinking atrous convolution for semantic image segmentation.” arXiv preprint arXiv:1706.05587 (2017). : \url{https://arxiv.org/abs/1706.05587}
 \end{thebibliography}
 
 \end{document}
