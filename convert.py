@@ -144,21 +144,28 @@ def level1(video, seg):
 
     for (i,j) in transition3:
         shot = np.zeros((height, width, 3), np.uint8)
+        imgmap = np.zeros((height, width), np.uint8)
         print((i,j))
-        count = i
-        vidcap.set(cv2.CAP_PROP_POS_FRAMES, count)
-        while count != j:
+        count = j
+        while count != i:
+            vidcap.set(cv2.CAP_PROP_POS_FRAMES, count)
             success, image = vidcap.read()
-            print(image.shape)
             if success:
-                if count == i:
-                    pass
+                
                 predict = seg.process(mx.nd.array(image))
-                mask = get_color_pallete(predict, 'pascal_voc')
-                mask.save('output/' + str(count) + '_mask.png')
+                
+
+                for (h,w), value in np.ndenumerate(predict):
+                    if imgmap[h][w] == 0 and value != 15:
+                        shot[h][w] = image[h][w]
+                        imgmap[h][w] = 1
+            
             else:
                 break
-            count += 1
+            count -= 1
+
+        shot = Image.fromarray(shot)
+        shot.save('output/'+str(i)+'_'+str(j)+'.png')
     
 
      
