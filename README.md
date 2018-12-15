@@ -50,7 +50,7 @@ we ignore the human part when making pdf.
 
 in this series of lecture, a transition is explicitly white-out. we detect those white-out scenes.
 
-
+blur detection : variance of laplacian?
 
 ### board overlay
 

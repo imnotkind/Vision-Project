@@ -2,6 +2,7 @@ import cv2
 import os
 import sys
 from fpdf import FPDF
+import numpy as np
 
 tmp_dir = "./tmp/"
 
@@ -22,26 +23,33 @@ def level1(video):
     count = 0
     preimage = None
     transition = []
+    fadestat = 0
     while vidcap.isOpened():
         success, image = vidcap.read()
 
         if success:
             #cv2.imwrite(tmp_dir + str(count) +'.png', image)
+            dist = 0
+
             if count != 0:
-                #diffimage = cv2.absdiff(preimage, image)
-                #diffimage = cv2.cvtColor(diffimage, cv2.COLOR_BGR2GRAY)
-                #dist = cv2.norm(image, preimage, cv2.NORM_L2)
-                #gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                #print(cv2.Laplacian(gray, cv2.CV_64F).var(), count)
+
+                
 
                 white = np.zeros((height, width, 3), np.uint8)
                 white[:] = (255, 255, 255)
-                #diffimage = cv2.absdiff(white, image)
-                #diffimage = cv2.cvtColor(diffimage, cv2.COLOR_BGR2GRAY)
                 dist = cv2.norm(image, white, cv2.NORM_L2)
-                print(dist, count)
+                
+
+                if predist + 100 < dist:
+                    fadestat += 1
+                else if predist - 100 > dist:
+                    fadestat -= 1
+                print(dist, count, fadestat)
+
+
             count += 1
             preimage = image
+            predist = dist
         else:
             break
 
