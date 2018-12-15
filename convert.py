@@ -155,6 +155,7 @@ def level1(video, seg):
         while count >= i:
             vidcap.set(cv2.CAP_PROP_POS_FRAMES, count)
             success, image = vidcap.read()
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             if success:
                 
                 predict = seg.process(mx.nd.array(image))
