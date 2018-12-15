@@ -82,9 +82,11 @@ def level1(video):
         else:
             break
 
+
     transition2 = []
     pre = None
     for i in transition:
+        print(i)
         if(pre != None and pre[0] == "down" and i[0] == "up"):
             transition2.append(pre)
             transition2.append(i)
