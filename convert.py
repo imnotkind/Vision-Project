@@ -126,7 +126,7 @@ def level1(video, seg):
             preimage = image
             predist = dist
         else:
-            print("Error1")
+            print("Error1", count)
             exit(0)
 
 
