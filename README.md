@@ -42,6 +42,10 @@ gpu error:
 
 
 
+smoothing
+
+- around 40 pixels of segmentation
+
 ### board transition detection
 
 in this series of lecture, a transition is explicitly white-out. we detect those white-out scenes.
