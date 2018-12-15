@@ -157,7 +157,7 @@ def level1(video, seg):
                 predict = seg.process(mx.nd.array(image))
                 mask = get_color_pallete(predict, 'pascal_voc')
                 mask.save('output/' + str(i) + '_mask.png')
-                if count == i:
+                if count == i+1:
                     exit(0)
             else:
                 break
