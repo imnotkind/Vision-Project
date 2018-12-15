@@ -42,8 +42,10 @@ def level1(video):
 
                 if predist + 100 < dist:
                     fadestat += 1
-                else if predist - 100 > dist:
+                elif predist - 100 > dist:
                     fadestat -= 1
+                else:
+                    fadestat = 0
                 print(dist, count, fadestat)
 
 
