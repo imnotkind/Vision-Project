@@ -148,6 +148,7 @@ def level1(video, seg):
     ########################################## overlay
 
     for (i,j) in transition3:
+        print(i,j)
         count = i
         vidcap.set(cv2.CAP_PROP_POS_FRAMES, count)
         while count != j:
@@ -155,7 +156,7 @@ def level1(video, seg):
             if success:
                 predict = seg.process(image)
                 mask = get_color_pallete(predict, self.palletename)
-                mask.save('output' + str(i) + '_mask.png')
+                mask.save('output/' + str(i) + '_mask.png')
                 if count == i:
                     exit(0)
             else:
