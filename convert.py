@@ -73,7 +73,7 @@ def level1(video):
                         
                     fadestart = count - 1
                     fadestat = 0
-                print(dist, count, fadestat)
+                print(dist / predist, count, fadestat)
 
 
             count += 1
