@@ -92,20 +92,21 @@ def level1(video):
         if(pre != None and pre[0] == "down" and i[0] == "up"):
             transition2.append((pre[1], i[2]))
         pre = i
-    
-    for j in transition2:
-        print(j)
+
 
     transition3 = []
     pre = 0
     for (i,j) in transition2:
-        transition3.append(pre, i)
+        transition3.append((pre, i-1))
         pre = j
-    transition3.append(pre, totalframe)
+    transition3.append(pre, totalframe-1)
 
     for j in transition3:
         print(j)
+    
     ########################################## overlay
+
+    for (i,j) in transition3:
 
     
 
