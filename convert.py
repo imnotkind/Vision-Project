@@ -24,6 +24,9 @@ def level1(video):
     preimage = None
     transition = []
     fadestat = 0
+    fadestart = 0
+    fadeend = 0
+
     while vidcap.isOpened():
         success, image = vidcap.read()
 
@@ -32,19 +35,40 @@ def level1(video):
             dist = 0
 
             if count != 0:
-
-                
-
                 white = np.zeros((height, width, 3), np.uint8)
                 white[:] = (255, 255, 255)
                 dist = cv2.norm(image, white, cv2.NORM_L2)
                 
 
-                if predist + 100 < dist:
-                    fadestat += 1
-                elif predist - 100 > dist:
-                    fadestat -= 1
+                if predist + 500 < dist:
+                    if fadestat < -6:
+                        fadeend = count - 1
+                        print("FADE DEC", fadestart, fadeend)
+                        fadestat = 0
+                    elif fadestat <= 0:
+                        fadestart = count - 1
+                        fadestat = 0
+                    else:
+                        fadestat += 1
+                elif predist - 500 > dist:
+                    if fadestat > 6:
+                        fadeend = count - 1
+                        print("FADE ENC", fadestart, fadeend)
+                        fadestat = 0
+                    elif fadestat >= 0:
+                        fadestart = count - 1
+                        fadestat = 0
+                    else:
+                        fadestat -= 1
+                    
                 else:
+                    if fadestat < -6:
+                        fadeend = count - 1
+                        print("FADE DEC", fadestart, fadeend)
+                    elif fadestat > 6:
+                        fadeend = count - 1
+                        print("FADE ENC", fadestart, fadeend)
+
                     fadestat = 0
                 print(dist, count, fadestat)
 
