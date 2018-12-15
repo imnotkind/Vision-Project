@@ -40,7 +40,7 @@ def level1(video):
                 dist = cv2.norm(image, white, cv2.NORM_L2) #white-like measure
                 
 
-                if predist + 500 < dist:
+                if predist + 1000 < dist:
                     if fadestat < -6:
                         fadeend = count - 1
                         transition.append(("down", fadestart, fadeend))
@@ -51,7 +51,7 @@ def level1(video):
                         fadestat = 0
                     else:
                         fadestat += 1
-                elif predist - 500 > dist:
+                elif predist - 1000 > dist:
                     if fadestat > 6:
                         fadeend = count - 1
                         transition.append(("up", fadestart, fadeend))
