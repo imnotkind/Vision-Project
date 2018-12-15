@@ -92,7 +92,7 @@ def level1(video):
     
     for j in transition2:
         print(j)
-    
+     
     vidcap.release()
     cv2.destroyAllWindows()
 
