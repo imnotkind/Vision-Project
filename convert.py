@@ -161,7 +161,7 @@ def level1(video, seg):
                 
                 marginmap = np.zeros((height, width), np.uint8)
                 for (h,w), value in np.ndenumerate(predict):
-                    if marginmap == 0 and value == 15:
+                    if marginmap[h][w] == 0 and value == 15:
                         for u in range(-20,20):
                             for v in range(-20,20):
                                 try:
