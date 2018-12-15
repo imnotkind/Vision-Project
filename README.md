@@ -63,9 +63,9 @@ board change detection:
 - board 색깔을 알아낸 뒤에 그 색깔로 얼만큼 pixel이 덮어씌워졌는지 조사
 - 또는 그냥 board끼리의 euclidian difference 측정 : 일정 threshold
 
-### board overlay
+### board recovery
 
-between those transitions, we overlay the board to get a full lecture board image.
+between those transitions, we recover the board to get a full lecture board image.
 
 if change occurred in board, we choose the latter one.
 

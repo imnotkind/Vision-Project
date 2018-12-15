@@ -38,33 +38,24 @@
 \maketitle
 \section{Summary}
 This project is about generating lecture notes out of a lecture video.
-The goal is to make images of a board scene, recovering the parts that the lecturer occluded.
+The goal is to recover images of a board scene, recovering the parts of the board that the lecturer occluded.
+
 \section{Motivation}
-Fractals are so beautiful.
-We can see tons of fractal videos on Youtube, and many people get inspiration from such elegant mathematical geometry.
-But we realized that it could be even more better with real-time interaction.
-\section{What to do}
-\subsection{High Resolution Fractals}
-We will generate high resolution fractals without any pre-calculated textures.
-Which means, it involves direct pixel-level calculation.
-The mathematical fractal model we're going to use is not determined, but we're considering to start from a famous model, such as the Mandelbrot Set.
-We can generate creative and unique new fractals from such well known fractal models, by distorting and adjusting some parameters.
-Because fractals are so sensitive and fine-tuned, there lies a kind of butterfly effect around fractal world.
-(Thus it requires delicate and exquisite calculations)
-\subsection{3D Geometry}
-Again, we will present a 3D fractal world.
-The basic process of 3D viewing and transformation will of course be adopted, but there would be something more than that.
-Some of the ideas are reordering viewing parameters, mixing or partially omitting some part of the pipeline, or many weird things.
-Usage of hierarchical models could be also helpful, like what we saw in the midterm exam, but we would need more complex models than that.
-\subsection{Animation}
-Changing the parameters of fractal or camera would yield beautiful animation.
-\subsection{Realtime Rendering and Interaction}
-We particularly want to emphasize the spatial impression of fractal world (that's why this project is about 3D).
-So wandering by yourself in the fractal world is essential to perceive the full structure of complex fractal space.
-Therefore we aim to provide people the realtime-rendering experience rather than just a video after long-time processing,
-meaning you can actually control the camera and do some action on the program.
-\section{How to achieve}
-\subsection{Development Enviornment}
+Sometimes, when you watch a lecture video, it is painful to write lecture notes. 
+If we automatically generate lecture notes, then it would definitely be convenient.
+
+\section{Goals}
+\subsection{Board Detection and Extracting Human Pixel}
+We first have to know where the board is, to generate a picture of the board. Even if the camera is not looking at the board orthogonally, it's no problem, because we could calculate the homography matrix since we know that the board is rectangular. Then we have to extract the human(lecturer) part of a board to get rid of it. The most essential part of this project is to know whether a human is blocking the board or not, since we want to get rid of the human pixel.
+\subsection{Board Transition Detection}
+When do we have to take a snapshot? I would guess when it's when a lecturer erases the board, or when it moves to a new board, or when the board changes. I call this as a 'board transition'. This part is the most hardest part, because every lecture has different transitions with different magnitude, and it's hard to catch them all. For example, what if the lecturer erases only part of the board, and keeps going on? It is quite a task to detect them significantly.
+\subsection{Board Recovery}
+We now know the timing when we need to extract board images, so we recover the board in that time interval. We need to use a scheme to effectively predict 
+\subsection{(Optional) Making images to a pdf file}
+A lecture note is best if it exists as a pdf, since a bunch of images are rather uncomfortable to keep.
+
+\section{Implementation}
+\subsection{Development Environment and Dataset}
 In this project we need direct controlling of the shaders, especially fragment shaders.
 Or even there could be some arbitrary change of pipeline in overall, because extreme features of fractal geometry could require some modification of typical graphics procedures.
 And also one of our goal is about optimization of this particular task, so we consider low-level programming.
@@ -72,7 +63,7 @@ And also one of our goal is about optimization of this particular task, so we co
 And fractals are not highly related to photo realism, so many pre-developed presets and modules provided by
 graphics engines such as Unity won't be particularly helpful.
 Thus we'll develop this project with pure OpenGL(with glut, glm, ...)
-\subsection{Shaders}
+\subsection{Human Exclusion by Semantic Segmentation}
 The key idea of rendering fractals is using fragment shaders wisely.
 'Escape-time fractals', such as Mandelbrot set is rendered based on the speed of diversion for every complex coordinates.
 So those kinds of fractals will require the renderer to perform per-pixel calculation, which is the reason fragment shaders are for.
@@ -86,7 +77,7 @@ We also expect an animation of fractal space, so vertex shaders also must be use
 Advanced techniques like shading, texture, arbitrary clipping, aliasing would make the final quality better or even produce some novel graphic.
 Our lecture hasn't covered those topics yet, so we will think about this later.
 
-\subsection{Optimization}
+\subsection{scheme}
 If we want to render fractals in real time, optimization will be important.
 Here are some schemes we've thought about.
 
@@ -110,7 +101,8 @@ We can reuse some part of frame buffer for last scene, which is not common.
 
 
 \section{Notable References}
-\subsection{Deeplab}
+\subsection{Deeplabv3}
+\url{https://arxiv.org/abs/1706.05587}
 There are 3 reference textbooks we'll study.
 \textit{Interactive Computer Graphics}\cite{c1}, our course textbook, introduces some background of fractal geometry and examples like Mandelbrot Set.
 \textit{OpenGL SuperBible}\cite{c2} introduces rendering methods of Julia fractals using shader.
