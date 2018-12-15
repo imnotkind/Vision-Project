@@ -201,4 +201,4 @@ def pic2pdf(width, height, count):
     pdf.output("./output.pdf","F")
 
 seg = Segmentation('deeplab_resnet152_voc', 'pascal_voc')
-level1("./video/level1/1.mp4", seg)
+level1(sys.argv[0], seg)
