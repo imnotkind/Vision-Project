@@ -37,13 +37,13 @@ def level1(video):
             if count != 0:
                 white = np.zeros((height, width, 3), np.uint8)
                 white[:] = (255, 255, 255)
-                dist = cv2.norm(image, white, cv2.NORM_L2)
+                dist = cv2.norm(image, white, cv2.NORM_L2) #white-like measure
                 
 
                 if predist + 500 < dist:
                     if fadestat < -6:
                         fadeend = count - 1
-                        print("################FADE DEC", fadestart, fadeend)
+                        transition.append(("down", fadestart, fadeend))
                         fadestart = count - 1
                         fadestat = 0
                     elif fadestat < 0:
@@ -54,7 +54,7 @@ def level1(video):
                 elif predist - 500 > dist:
                     if fadestat > 6:
                         fadeend = count - 1
-                        print("################FADE ENC", fadestart, fadeend)
+                        transition.append(("up", fadestart, fadeend))
                         fadestart = count - 1
                         fadestat = 0
                     elif fadestat > 0:
@@ -65,11 +65,9 @@ def level1(video):
                     
                 else:
                     if fadestat < -6:
-                        fadeend = count - 1
-                        print("################FADE DEC", fadestart, fadeend)
+                        transition.append(("down", fadestart, fadeend))
                     elif fadestat > 6:
-                        fadeend = count - 1
-                        print("################FADE ENC", fadestart, fadeend)
+                        transition.append(("up", fadestart, fadeend))
                         
                     fadestart = count - 1
                     fadestat = 0
