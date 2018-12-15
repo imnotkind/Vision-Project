@@ -65,8 +65,10 @@ def level1(video):
                     
                 else:
                     if fadestat < -6:
+                        fadeend = count - 1
                         transition.append(("down", fadestart, fadeend))
                     elif fadestat > 6:
+                        fadeend = count - 1
                         transition.append(("up", fadestart, fadeend))
                         
                     fadestart = count - 1
