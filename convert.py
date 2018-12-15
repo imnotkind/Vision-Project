@@ -28,9 +28,8 @@ class Segmentation:
             print("invalid model name")
             exit(0)
 
-    def process(self, filename):
-        origimg = image.imread(filename + '.png')
-        img = self.transform_fn(origimg)
+    def process(self, mxndarray):
+        img = self.transform_fn(mxndarray)
         img = img.expand_dims(0).as_in_context(self.ctx)
         output = self.model.demo(img)
         predict = mx.nd.squeeze(mx.nd.argmax(output, 1)).asnumpy()
@@ -40,14 +39,7 @@ class Segmentation:
             s.add(value)
         print(s) #0:background, 15:person
 
-        mask = get_color_pallete(predict, self.palletename)
-        mask.save(filename + '_mask.png')
-
-        mask2 = np.array(mask.convert('RGB'))
-
-        overlay = cv2.addWeighted(origimg.asnumpy(),0.5,mask2,0.5,0)
-        overlay = Image.fromarray(overlay)
-        overlay.save(filename + '_overlay.png')
+        return predict
 
 
 
@@ -56,7 +48,10 @@ class Segmentation:
         plt.imshow(tmp)
         plt.show()
 
-def level1(video):
+
+
+
+def level1(video, seg):
     vidcap = cv2.VideoCapture(video)
     totalframe = vidcap.get(cv2.CAP_PROP_FRAME_COUNT)
     print("TOTAL FRAME COUNT : ",totalframe) 
@@ -131,13 +126,13 @@ def level1(video):
             preimage = image
             predist = dist
         else:
-            break
+            print("Error1")
+            exit(0)
 
 
     transition2 = []
     pre = None
     for i in transition:
-        print(i)
         if(pre != None and pre[0] == "down" and i[0] == "up"):
             transition2.append((pre[1], i[2]))
         pre = i
@@ -148,15 +143,26 @@ def level1(video):
     for (i,j) in transition2:
         transition3.append((pre, i-1))
         pre = j
-    transition3.append((pre, totalframe-1))
+    transition3.append((pre, int(totalframe-1)))
 
-    for j in transition3:
-        print(j)
     
     ########################################## overlay
 
     for (i,j) in transition3:
-
+        count = i
+        vidcap.set(cv2.CAP_PROP_POS_FRAMES, count)
+        while count != j:
+            success, image = vidcap.read()
+            if success:
+                predict = seg.process(image)
+                mask = get_color_pallete(predict, self.palletename)
+                mask.save('output' + str(i) + '_mask.png')
+                if count == i:
+                    exit(0)
+            else:
+                print("Error2")
+                exit(0)
+            count += 1
     
 
      
@@ -173,4 +179,5 @@ def pic2pdf(width, height, count):
 
     pdf.output("./output.pdf","F")
 
-level1("./video/level1/1.mp4")
+seg = Segmentation('deeplab_resnet152_voc', 'pascal_voc')
+level1("./video/level1/1.mp4", seg)

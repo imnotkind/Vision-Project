@@ -62,5 +62,6 @@ filelist = ['255', '2740', '2877', '2921', '3097']
 
 filelist = list(map(lambda x : 'sample/'+x, filelist))
 
-for i in filelist:
-    seg.process(i)
+for filename in filelist:
+    
+    seg.process(filename)
