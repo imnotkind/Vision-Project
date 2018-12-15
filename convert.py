@@ -44,8 +44,9 @@ def level1(video):
                     if fadestat < -6:
                         fadeend = count - 1
                         print("FADE DEC", fadestart, fadeend)
+                        fadestart = count - 1
                         fadestat = 0
-                    elif fadestat <= 0:
+                    elif fadestat < 0:
                         fadestart = count - 1
                         fadestat = 0
                     else:
@@ -54,8 +55,9 @@ def level1(video):
                     if fadestat > 6:
                         fadeend = count - 1
                         print("FADE ENC", fadestart, fadeend)
+                        fadestart = count - 1
                         fadestat = 0
-                    elif fadestat >= 0:
+                    elif fadestat > 0:
                         fadestart = count - 1
                         fadestat = 0
                     else:
