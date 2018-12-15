@@ -34,11 +34,6 @@ class Segmentation:
         output = self.model.demo(img)
         predict = mx.nd.squeeze(mx.nd.argmax(output, 1)).asnumpy()
 
-        s = set([])
-        for (x,y), value in np.ndenumerate(predict):
-            s.add(value)
-        print(s) #0:background, 15:person
-
         return predict
 
 
@@ -148,12 +143,16 @@ def level1(video, seg):
     ########################################## overlay
 
     for (i,j) in transition3:
+        shot = np.zeros((height, width, 3), np.uint8)
         print((i,j))
         count = i
         vidcap.set(cv2.CAP_PROP_POS_FRAMES, count)
         while count != j:
             success, image = vidcap.read()
+            print(image.shape)
             if success:
+                if count == i:
+                    pass
                 predict = seg.process(mx.nd.array(image))
                 mask = get_color_pallete(predict, 'pascal_voc')
                 mask.save('output/' + str(count) + '_mask.png')
