@@ -88,7 +88,7 @@ def level1(video):
     for i in transition:
         print(i)
         if(pre != None and pre[0] == "down" and i[0] == "up"):
-            transition2.append((pre[0], i[1]))
+            transition2.append((pre[1], i[2]))
         pre = i
     
     for j in transition2:

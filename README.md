@@ -50,7 +50,7 @@ blur detection : variance of laplacian : 동영상에 blur가 많으므로 버�
 
 white-like metric detection : could misdetect human behavior (사람이 영상에서 차지하는 면적이 줄거나 그럴때)
 
-- 상
+- 상대적으로 dist/pre_dist 를 해봤지만 잘 안 먹힘
 
 
 
