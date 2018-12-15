@@ -54,6 +54,11 @@ white-like metric detection : could misdetect human behavior (사람이 영상�
 
 
 
+board change detection:
+
+- board 색깔을 알아낸 뒤에 그 색깔로 얼만큼 pixel이 덮어씌워졌는지 조사
+- 또는 그냥 board끼리의 euclidian difference 측정 : 일정 threshold
+
 ### board overlay
 
 between those transitions, we overlay the board to get a full lecture board image.

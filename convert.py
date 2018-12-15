@@ -60,6 +60,7 @@ def level1(video, seg):
     print("HEIGHT : ", height)
 
     ##################################### calculate transition
+    print("transition calculation start")
     vidcap.set(cv2.CAP_PROP_POS_FRAMES, 0) # 0 based index frame
     count = 0
     preimage = None
@@ -139,21 +140,35 @@ def level1(video, seg):
         pre = j
     transition3.append((pre, int(totalframe-1)))
 
+    for i in transition3:
+        print(i)
     
-    ########################################## overlay
+
+    ########################################## recover
+    print("recover start")
 
     for (i,j) in transition3:
         shot = np.zeros((height, width, 3), np.uint8)
         imgmap = np.zeros((height, width), np.uint8)
         print((i,j))
         count = j
-        while count != i:
+        while count >= i:
             vidcap.set(cv2.CAP_PROP_POS_FRAMES, count)
             success, image = vidcap.read()
             if success:
                 
                 predict = seg.process(mx.nd.array(image))
                 
+                marginmap = np.zeros((height, width), np.uint8)
+                for (h,w), value in np.ndenumerate(predict):
+                    if marginmap == 0 and value == 15:
+                        for u in range(-20,20):
+                            for v in range(-20,20):
+                                try:
+                                    marginmap[h+u][w+v] = 1
+                                    predict[h+u][w+v] = 15.0
+                                except:
+                                    pass
 
                 for (h,w), value in np.ndenumerate(predict):
                     if imgmap[h][w] == 0 and value != 15:
@@ -162,10 +177,10 @@ def level1(video, seg):
 
                 if np.all(imgmap):
                     break
-
+                
             else:
                 break
-            count -= 1
+            count -= 100
 
         shot = Image.fromarray(shot)
         shot.save('output/'+str(i)+'_'+str(j)+'.png')
