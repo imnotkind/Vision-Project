@@ -32,7 +32,7 @@ def level1(video):
 
         if success:
             #cv2.imwrite(tmp_dir + str(count) +'.png', image)
-            dist = 0
+            dist = 1
 
             if count != 0:
                 white = np.zeros((height, width, 3), np.uint8)
