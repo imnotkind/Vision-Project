@@ -159,7 +159,10 @@ def level1(video, seg):
                     if imgmap[h][w] == 0 and value != 15:
                         shot[h][w] = image[h][w]
                         imgmap[h][w] = 1
-            
+
+                if np.all(imgmap):
+                    break
+
             else:
                 break
             count -= 1
