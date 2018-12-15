@@ -155,7 +155,7 @@ def level1(video, seg):
             success, image = vidcap.read()
             if success:
                 predict = seg.process(mx.nd.array(image))
-                mask = get_color_pallete(predict, self.palletename)
+                mask = get_color_pallete(predict, 'pascal_voc')
                 mask.save('output/' + str(i) + '_mask.png')
                 if count == i:
                     exit(0)
