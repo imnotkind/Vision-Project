@@ -9,7 +9,8 @@ tmp_dir = "./tmp/"
 
 def level1(video):
     vidcap = cv2.VideoCapture(video)
-    print("TOTAL FRAME COUNT : ",vidcap.get(cv2.CAP_PROP_FRAME_COUNT)) 
+    totalframe = vidcap.get(cv2.CAP_PROP_FRAME_COUNT)
+    print("TOTAL FRAME COUNT : ",totalframe) 
     print("FPS : ", vidcap.get(cv2.CAP_PROP_FPS))
 
 
@@ -19,6 +20,7 @@ def level1(video):
     print("WIDTH : ", width)
     print("HEIGHT : ", height)
 
+    ##################################### calculate transition
     vidcap.set(cv2.CAP_PROP_POS_FRAMES, 0) # 0 based index frame
     count = 0
     preimage = None
@@ -93,6 +95,20 @@ def level1(video):
     
     for j in transition2:
         print(j)
+
+    transition3 = []
+    pre = 0
+    for (i,j) in transition2:
+        transition3.append(pre, i)
+        pre = j
+    transition3.append(pre, totalframe)
+
+    for j in transition3:
+        print(j)
+    ########################################## overlay
+
+    
+
      
     vidcap.release()
     cv2.destroyAllWindows()
