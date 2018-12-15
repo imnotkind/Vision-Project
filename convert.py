@@ -126,8 +126,7 @@ def level1(video, seg):
             preimage = image
             predist = dist
         else:
-            print("Error1", count)
-            exit(0)
+            break
 
 
     transition2 = []
@@ -160,8 +159,7 @@ def level1(video, seg):
                 if count == i:
                     exit(0)
             else:
-                print("Error2")
-                exit(0)
+                break
             count += 1
     
 
