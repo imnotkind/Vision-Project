@@ -80,7 +80,7 @@ def level1(video):
         else:
             break
 
-
+    print(transition)
     vidcap.release()
     cv2.destroyAllWindows()
 
