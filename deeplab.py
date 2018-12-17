@@ -37,7 +37,7 @@ class Segmentation:
             s.add(value)
         print(s) #0:background, 15:person
 
-        marginmap = np.zeros((height, width), np.uint8)
+        marginmap = np.zeros((predict.shape[0], predict.shape[1]), np.uint8)
         for (h,w), value in np.ndenumerate(predict):
             if marginmap[h][w] == 0 and value == 15:
                 for u in range(-20,20):
