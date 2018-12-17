@@ -37,14 +37,25 @@ class Segmentation:
             s.add(value)
         print(s) #0:background, 15:person
 
+        marginmap = np.zeros((height, width), np.uint8)
+        for (h,w), value in np.ndenumerate(predict):
+            if marginmap[h][w] == 0 and value == 15:
+                for u in range(-20,20):
+                    for v in range(-20,20):
+                        try:
+                            marginmap[h+u][w+v] = 1
+                            predict[h+u][w+v] = 15.0
+                        except:
+                            pass
+
         mask = get_color_pallete(predict, self.palletename)
-        mask.save(filename + '_mask.png')
+        mask.save(filename + '_marginmask.png')
 
         mask2 = np.array(mask.convert('RGB'))
 
         overlay = cv2.addWeighted(origimg.asnumpy(),0.5,mask2,0.5,0)
         overlay = Image.fromarray(overlay)
-        overlay.save(filename + '_overlay.png')
+        overlay.save(filename + '_marginoverlay.png')
 
 
 
